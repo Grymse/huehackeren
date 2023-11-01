@@ -10,11 +10,20 @@ export class ArduinoHueReader {
 
   async connect(onData: (data: string | undefined) => void) {
     // Prompt user to select any serial port
-    const port = await navigator.serial.requestPort();
-    this.port.set(port);
-
+    let port;
     // Open the port with the specified baud rate
-    await port.open({ baudRate: 115200 });
+    try {
+      port = await navigator.serial.requestPort();
+      this.port.set(port);
+      await port.open({ baudRate: 115200 });
+    } catch (e) {
+      alert(
+        "Failed to open serial port. Ensure that the Arduino is connected and the serial monitor is closed."
+      );
+      this.port.set(undefined);
+      console.error(e);
+      return;
+    }
 
     // Define the text decoder
     const textDecoder = new TextDecoderStream();
