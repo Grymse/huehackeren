@@ -2,7 +2,7 @@
   import { writable } from "svelte/store";
   import Background from "./Background.svelte";
   import { ArduinoHueReader } from "./script";
-  import { onMount } from "svelte";
+  import { Toaster } from "svelte-french-toast";
 
   const reader = new ArduinoHueReader();
   let isConnected = false;
@@ -75,6 +75,7 @@
   }
 </script>
 
+<Toaster />
 <main>
   <Background {isConnected} />
   <h1>Hue Hackeren</h1>

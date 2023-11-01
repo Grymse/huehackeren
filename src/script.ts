@@ -1,5 +1,6 @@
 import type SerialPort from "serialport";
 import { get, writable, type Writable } from "svelte/store";
+import toast from "svelte-french-toast";
 
 export class ArduinoHueReader {
   port: Writable<SerialPort | undefined> = writable<SerialPort | undefined>(
@@ -17,10 +18,14 @@ export class ArduinoHueReader {
       this.port.set(port);
       await port.open({ baudRate: 115200 });
     } catch (e) {
-      alert(
-        "Failed to open serial port. Ensure that the Arduino is connected and the serial monitor is closed."
-      );
-      this.port.set(undefined);
+      toast.error(
+        "Failed to open serial port. Ensure that the Arduino is connected and the serial monitor is closed.",
+        {
+          duration: 10000,
+          position: "bottom-left",
+        }
+      ),
+        this.port.set(undefined);
       console.error(e);
       return;
     }
