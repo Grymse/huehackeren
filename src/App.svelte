@@ -1,5 +1,6 @@
 <script lang="ts">
   import { writable } from "svelte/store";
+  import Background from "./Background.svelte";
   import { ArduinoHueReader } from "./script";
 
   const reader = new ArduinoHueReader();
@@ -57,7 +58,8 @@
 </script>
 
 <main>
-  <h1>WebHue</h1>
+  <Background {isConnected} />
+  <h1>Philip Hue Hackeren</h1>
   <button on:click={() => reader.connect(onData)}> Connect </button>
   <button
     on:click={() => {
