@@ -59,7 +59,14 @@
 <main>
   <h1>WebHue</h1>
   <button on:click={() => reader.connect(onData)}> Connect </button>
-  <button on:click={reader.disconnect}> Disconnect </button>
+  <button
+    on:click={() => {
+      reader.disconnect;
+      messages.set([]);
+    }}
+  >
+    Disconnect
+  </button>
 
   {#if isConnected}
     <p>CONNECTED</p>
@@ -73,13 +80,14 @@
     {/each}
   </ul>
   <p>Busta Grymes productions A/S</p>
-  <p style="color: gray;">Incoorporated @ yo mama</p>
+  <p style="color: gray;">Contact the TAs if you experience any problems :D</p>
 </main>
 
 <style>
   ul {
-    width: calc(100vw - 300px);
-    background-color: #202020;
+    width: 95vw;
+    max-width: 900px;
+    background-color: #1d1d1d;
     box-shadow: inset 0 0 10px #000000;
     border-radius: 16px;
     padding: 16px;
