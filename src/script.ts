@@ -1,11 +1,12 @@
 import type SerialPort from "serialport";
-import { writable, type Writable } from "svelte/store";
+import { get, writable, type Writable } from "svelte/store";
 
 export class ArduinoHueReader {
   port: Writable<SerialPort | undefined> = writable<SerialPort | undefined>(
     undefined
   );
   concatentatedData: string = "";
+  reader: ReadableStreamDefaultReader<string> | undefined;
 
   async connect(onData: (data: string | undefined) => void) {
     // Prompt user to select any serial port
@@ -19,6 +20,7 @@ export class ArduinoHueReader {
     const textDecoder = new TextDecoderStream();
     const readableStreamClosed = port.readable.pipeTo(textDecoder.writable);
     const reader = textDecoder.readable.getReader();
+    this.reader = reader;
 
     // Read loop
     while (true) {
@@ -52,57 +54,10 @@ export class ArduinoHueReader {
   }
 
   async disconnect() {
-    if (this.port) {
-      await this.port.close();
+    const port = get(this.port);
+    if (port) {
+      await port.close();
       this.port.set(undefined);
     }
   }
 }
-/* 
-
-function errMessage(err) {
-  console.log("\x1b[31m", "#####################################");
-  console.log("\x1b[31m", err);
-  console.log("\x1b[31m", "#####################################", "\x1b[0m");
-}
-function errOneLine(err) {
-  console.log("\x1b[31m", err, "\x1b[0m");
-}
-
-function errBar() {
-  console.log("\x1b[31m", "#####################################", "\x1b[0m");
-}
-
-
-function start(path) {
-  const port = new SerialPort(path, { baudRate: 115200 });
-  port.on("error", portError);
-  const parser = new Readline();
-  port.pipe(parser);
-
-  parser.on("data", (line) => {
-    if (line.substring(0, 7) === "http://") {
-      const input = line.split("|");
-      const data = JSON.parse(input[1]);
-      if (data.hue !== undefined) {
-        if (data.hue < 0) {
-          data.hue += 65536;
-        }
-      }
-      sendData(input[0], data);
-      if (!errorState) log(`> ${input[0]}::${JSON.stringify(data)}`);
-    } else {
-      console.log("\x1b[36m", `> ${line}`, "\x1b[0m");
-    }
-  });
-}
-
-function triggerErrorState() {
-  errorState = true;
-  clearTimeout(triggerErrorState.timeout);
-  triggerErrorState.timeout = setTimeout(() => {
-    errorState = false;
-  }, 2000);
-}
-
- */
