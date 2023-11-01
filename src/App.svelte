@@ -79,7 +79,7 @@
     color: black;
   }
 
-  .log {
+  .error {
     color: red;
   }
 
