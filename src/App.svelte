@@ -72,9 +72,20 @@
       <li class={message.type}>#: {message.message}</li>
     {/each}
   </ul>
+  <p>Busta Grymes productions A/S</p>
+  <p style="color: gray;">Incoorporated @ yo mama</p>
 </main>
 
 <style>
+  ul {
+    width: calc(100vw - 300px);
+    background-color: #202020;
+    box-shadow: inset 0 0 10px #000000;
+    border-radius: 16px;
+    padding: 16px;
+    height: calc(100vh - 400px);
+  }
+
   .log {
     color: black;
   }
