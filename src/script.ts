@@ -58,6 +58,8 @@ export class ArduinoHueReader {
     if (port) {
       await port.close();
       this.port.set(undefined);
+      this.reader?.releaseLock();
+      this.reader = undefined;
     }
   }
 }

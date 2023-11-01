@@ -68,11 +68,21 @@
     Disconnect
   </button>
 
-  {#if isConnected}
-    <p>CONNECTED</p>
-  {:else}
-    <p>NOT CONNECTED</p>
-  {/if}
+  <div
+    style="display: flex; justify-content: center; align-items: center; gap: 8px;"
+  >
+    {#if isConnected}
+      <span
+        style="width: 8px; border-radius: 8px; height: 8px; background-color: lime;"
+      />
+      <p>CONNECTED</p>
+    {:else}
+      <span
+        style="width: 8px; border-radius: 8px;  height: 8px; background-color: red;"
+      />
+      <p>NOT CONNECTED</p>
+    {/if}
+  </div>
 
   <ul>
     {#each $messages as message}
@@ -86,7 +96,7 @@
 <style>
   ul {
     width: 95vw;
-    max-width: 900px;
+    max-width: 1100px;
     background-color: #1d1d1d;
     box-shadow: inset 0 0 10px #000000;
     border-radius: 16px;
