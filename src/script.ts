@@ -54,12 +54,14 @@ export class ArduinoHueReader {
   }
 
   async disconnect() {
+    console.log("disconnect");
     const port = get(this.port);
     if (port) {
-      await port.close();
-      this.port.set(undefined);
+      console.log("reader", this.reader);
       this.reader?.releaseLock();
       this.reader = undefined;
+      await port.close();
+      this.port.set(undefined);
     }
   }
 }

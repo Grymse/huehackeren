@@ -2,6 +2,7 @@
   import { writable } from "svelte/store";
   import Background from "./Background.svelte";
   import { ArduinoHueReader } from "./script";
+  import { onMount } from "svelte";
 
   const reader = new ArduinoHueReader();
   let isConnected = false;
@@ -12,7 +13,10 @@
   type Message = {
     type: "log" | "error" | "help";
     message: string;
+    timestamp: string;
   };
+
+  let consoleElement: HTMLDivElement;
 
   const messages = writable<Message[]>([]);
 
@@ -21,10 +25,7 @@
     if (data === undefined) return;
 
     if (data.substring(0, 7) !== "http://") {
-      messages.update((messages) => [
-        ...messages,
-        { type: "help", message: data },
-      ]);
+      LOG("help", data);
       return;
     }
 
@@ -44,16 +45,33 @@
       },
       body: JSON.stringify(assembledData),
     }).catch((e) => {
-      messages.update((messages) => [
-        ...messages,
-        { type: "error", message: e.message },
-      ]);
+      LOG("error", e.message);
     });
 
-    messages.update((messages) => [
-      ...messages,
-      { type: "log", message: data },
-    ]);
+    LOG("log", data);
+  }
+
+  function LOG(type: "log" | "error" | "help", message: string) {
+    const timestamp = generateTimestamp();
+
+    messages.update((messages) => [...messages, { type, message, timestamp }]);
+
+    setTimeout(() => {
+      consoleElement.scrollTop = consoleElement.scrollHeight;
+    }, 0);
+  }
+
+  function generateTimestamp() {
+    const date = new Date();
+    const minutes = appendZeros(date.getMinutes(), 2);
+    const seconds = appendZeros(date.getSeconds(), 2);
+    const milliseconds = appendZeros(date.getMilliseconds(), 3);
+
+    return `${minutes}:${seconds}.${milliseconds}`;
+  }
+
+  function appendZeros(value: number, length: number) {
+    return `${value}`.padStart(length, "0");
   }
 </script>
 
@@ -63,8 +81,7 @@
   <button on:click={() => reader.connect(onData)}> Connect </button>
   <button
     on:click={() => {
-      reader.disconnect;
-      messages.set([]);
+      location.reload();
     }}
   >
     Disconnect
@@ -86,17 +103,20 @@
     {/if}
   </div>
 
-  <ul>
+  <div class="console" bind:this={consoleElement}>
     {#each $messages as message}
-      <li class={message.type}>#: {message.message}</li>
+      <div class={"console-line " + message.type}>
+        <p style="width: 85px; color: #555; margin:0">{message.timestamp}</p>
+        <p style="margin:0;">{message.message}</p>
+      </div>
     {/each}
-  </ul>
+  </div>
   <p>Busta Grymes productions A/S</p>
   <p style="color: gray;">Contact the TAs if you experience any problems :D</p>
 </main>
 
 <style>
-  ul {
+  .console {
     width: 95vw;
     max-width: 1100px;
     background-color: #1d1d1d;
@@ -104,10 +124,17 @@
     border-radius: 16px;
     padding: 16px;
     height: calc(100vh - 400px);
+    overflow-y: scroll;
+    gap: 4px;
+    display: flex;
+    flex-direction: column;
   }
 
-  li {
+  .console-line {
     text-align: left;
+    display: flex;
+    margin: 0;
+    padding: 0;
   }
 
   .log {
