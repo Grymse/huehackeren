@@ -9,7 +9,7 @@
   });
 
   type Message = {
-    type: "log" | "error";
+    type: "log" | "error" | "help";
     message: string;
   };
 
@@ -19,16 +19,29 @@
     console.log(data);
     if (data === undefined) return;
 
-    // onData defines the whole request
+    if (data.substring(0, 7) !== "http://") {
+      messages.update((messages) => [
+        ...messages,
+        { type: "help", message: data },
+      ]);
+      return;
+    }
 
     const splitData = data.split("|");
+
+    const assembledData = JSON.parse(splitData[1]);
+    if (assembledData.hue !== undefined) {
+      if (assembledData.hue < 0) {
+        assembledData.hue += 65536;
+      }
+    }
 
     fetch(splitData[0], {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: splitData[1],
+      body: JSON.stringify(assembledData),
     }).catch((e) => {
       messages.update((messages) => [
         ...messages,
@@ -68,5 +81,9 @@
 
   .log {
     color: red;
+  }
+
+  .help {
+    color: green;
   }
 </style>
