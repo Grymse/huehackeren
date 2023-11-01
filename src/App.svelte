@@ -86,15 +86,19 @@
     height: calc(100vh - 400px);
   }
 
+  li {
+    text-align: left;
+  }
+
   .log {
-    color: black;
+    color: rgb(56 189 248);
   }
 
   .error {
-    color: red;
+    color: rgb(248 113 113);
   }
 
   .help {
-    color: green;
+    color: rgb(216 180 254);
   }
 </style>
