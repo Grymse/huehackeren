@@ -1,4 +1,5 @@
 import type SerialPort from "serialport";
+import { writable } from "svelte/store";
 
 export class ArduinoHueReader {
   private onData: (data: string | undefined) => void;
@@ -11,6 +12,8 @@ export class ArduinoHueReader {
   async connect() {
     // Prompt user to select any serial port
     const port = await navigator.serial.requestPort();
+    this.port = port;
+    const onData = this.onData;
 
     // Open the port with the specified baud rate
     await port.open({ baudRate: 115200 });
@@ -28,11 +31,19 @@ export class ArduinoHueReader {
         break;
       }
 
-      this.onData(value);
+      onData(value);
     }
 
     await readableStreamClosed;
     await port.close();
+    this.port = undefined;
+  }
+
+  async disconnect() {
+    if (this.port) {
+      await this.port.close();
+      this.port = undefined;
+    }
   }
 }
 /* 

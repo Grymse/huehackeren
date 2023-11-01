@@ -5,5 +5,7 @@
 </script>
 
 <main>
+  <div />
   <button on:click={reader.connect}> Connect </button>
+  <button on:click={reader.disconnect}> Disconnect </button>
 </main>
