@@ -2,9 +2,10 @@ import type SerialPort from "serialport";
 import { writable, type Writable } from "svelte/store";
 
 export class ArduinoHueReader {
-  private port: Writable<SerialPort | undefined> = writable<
-    SerialPort | undefined
-  >(undefined);
+  port: Writable<SerialPort | undefined> = writable<SerialPort | undefined>(
+    undefined
+  );
+  concatentatedData: string = "";
 
   async connect(onData: (data: string | undefined) => void) {
     // Prompt user to select any serial port
@@ -27,7 +28,22 @@ export class ArduinoHueReader {
         break;
       }
 
-      onData(value);
+      // Concatenate data
+      this.concatentatedData += value;
+
+      // Split data by line
+      const lines = this.concatentatedData.split("\n");
+
+      // remove all processed lines from the concatenated data
+      this.concatentatedData = lines[lines.length - 1];
+
+      // If there are more than one line, the last line is incomplete
+      // and should be concatenated with the next chunk of data
+      if (lines.length > 1) {
+        for (let i = 0; i < lines.length - 1; i++) {
+          onData(lines[i]);
+        }
+      }
     }
 
     await readableStreamClosed;
