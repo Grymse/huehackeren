@@ -111,7 +111,7 @@
       </div>
     {/each}
   </div>
-  <p>Busta Grymes productions A/S</p>
+  <p>Busta Grymes productions</p>
   <p style="color: gray;">Contact the TAs if you experience any problems :D</p>
 </main>
 
