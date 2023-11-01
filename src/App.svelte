@@ -48,7 +48,7 @@
       LOG("error", e.message);
     });
 
-    LOG("log", splitData[1] + " sent to " + splitData[0]);
+    LOG("log", splitData[0] + " DATA: " + splitData[1]);
   }
 
   function LOG(type: "log" | "error" | "help", message: string) {
