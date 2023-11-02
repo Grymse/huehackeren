@@ -86,7 +86,8 @@
   <button on:click={() => reader.connect(onData)}> Connect </button>
   <button
     on:click={() => {
-      location.reload();
+      reader.disconnect();
+      /* location.reload(); */
     }}
   >
     Disconnect

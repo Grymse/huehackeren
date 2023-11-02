@@ -70,12 +70,15 @@ export class ArduinoHueReader {
   async disconnect() {
     console.log("disconnect");
     const port = get(this.port);
-    if (port) {
-      console.log("reader", this.reader);
-      this.reader?.releaseLock();
-      this.reader = undefined;
-      await port.close();
-      this.port.set(undefined);
-    }
+    try {
+      if (port && !port?.closed) {
+        this.reader?.cancel();
+        this.reader?.closed;
+        this.reader?.releaseLock();
+        this.reader = undefined;
+        await port.close();
+      }
+    } catch (e) {}
+    this.port.set(undefined);
   }
 }
