@@ -10,6 +10,7 @@ export class ArduinoHueReader {
   reader: ReadableStreamDefaultReader<string> | undefined;
 
   async connect(onData: (data: string | undefined) => void) {
+    await this.disconnect();
     // Prompt user to select any serial port
     let port;
     // Open the port with the specified baud rate
@@ -61,9 +62,14 @@ export class ArduinoHueReader {
         }
       }
     }
-
-    await readableStreamClosed;
-    await port.close();
+    try {
+      await readableStreamClosed;
+    } catch (e) {}
+    try {
+      await port.close();
+    } catch (e) {
+      console.error(e);
+    }
     this.port.set(undefined);
   }
 
@@ -71,16 +77,10 @@ export class ArduinoHueReader {
     console.log("disconnect");
     const port = get(this.port);
 
-    console.log(port);
     try {
       if (port && !port?.closed) {
         this.reader?.cancel();
-        this.reader?.closed;
-        this.reader?.releaseLock();
-        this.reader = undefined;
-        await port.close();
       }
     } catch (e) {}
-    this.port.set(undefined);
   }
 }
