@@ -21,34 +21,38 @@
   const messages = writable<Message[]>([]);
 
   function onData(data: string | undefined) {
-    console.log(data);
-    if (data === undefined) return;
+    try {
+      console.log(data);
+      if (data === undefined) return;
 
-    if (data.substring(0, 7) !== "http://") {
-      LOG("help", data);
-      return;
-    }
-
-    const splitData = data.split("|");
-
-    const assembledData = JSON.parse(splitData[1]);
-    if (assembledData.hue !== undefined) {
-      if (assembledData.hue < 0) {
-        assembledData.hue += 65536;
+      if (data.substring(0, 7) !== "http://") {
+        LOG("help", data);
+        return;
       }
+
+      const splitData = data.split("|");
+
+      const assembledData = JSON.parse(splitData[1]);
+      if (assembledData.hue !== undefined) {
+        if (assembledData.hue < 0) {
+          assembledData.hue += 65536;
+        }
+      }
+
+      fetch(splitData[0], {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(assembledData),
+      }).catch((e) => {
+        LOG("error", e.message);
+      });
+
+      LOG("log", splitData[0] + " DATA: " + splitData[1]);
+    } catch (e) {
+      LOG("error", "Received invalid data from Arduino");
     }
-
-    fetch(splitData[0], {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(assembledData),
-    }).catch((e) => {
-      LOG("error", e.message);
-    });
-
-    LOG("log", splitData[0] + " DATA: " + splitData[1]);
   }
 
   function LOG(type: "log" | "error" | "help", message: string) {
