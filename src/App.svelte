@@ -40,7 +40,7 @@
       }
 
       fetch(splitData[0], {
-        method: "POST",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
