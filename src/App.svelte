@@ -3,12 +3,10 @@
   import Background from "./Background.svelte";
   import { ArduinoHueReader } from "./script";
   import { Toaster } from "svelte-french-toast";
+  import { onMount } from "svelte";
 
   const reader = new ArduinoHueReader();
   let isConnected = false;
-  reader.port.subscribe((port) => {
-    isConnected = !!port;
-  });
 
   type Message = {
     type: "log" | "error" | "help";
@@ -54,6 +52,18 @@
       LOG("error", "Received invalid data from Arduino");
     }
   }
+  onMount(() => {
+    navigator.serial.addEventListener("connect", (e) => {
+      isConnected = true;
+      // Add |e.target| to the UI or automatically connect.
+    });
+
+    navigator.serial.addEventListener("disconnect", (e) => {
+      isConnected = false;
+      // Remove |e.target| from the UI. If the device was open the
+      // disconnection can also be observed as a stream error.
+    });
+  });
 
   function LOG(type: "log" | "error" | "help", message: string) {
     const timestamp = generateTimestamp();
